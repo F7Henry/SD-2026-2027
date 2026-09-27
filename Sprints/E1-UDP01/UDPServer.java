@@ -13,18 +13,15 @@ public class UDPServer {
     ) {
         //coisas
         if (nCurrentMessage == nLastMessageInOrder + 1) {
-            //coisas
             System.out.println("Mensagem entregue: " + currentMessage);
             nLastMessageInOrder++;
         }
         else if (nCurrentMessage > nLastMessageInOrder + 1) {
-            //coisas
             System.out.println("Fora de ordem: " + currentMessage);
             System.out.println("  > Aguardando mensagem de número: " + (nLastMessageInOrder + 1));
             mapaRecebidos.putIfAbsent(nCurrentMessage, currentMessage);
         }
         else {
-            //coisas
             System.out.println("Mensagem já recebida!");
         }
         return nLastMessageInOrder;
