@@ -1,10 +1,12 @@
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class UDPServer {
 
     public static HashMap<Integer, String> mapaRecebidos = new HashMap<>();
+    public static ArrayList<String> mensagensEntregues = new ArrayList<>();
 
     public static int processDeliveredMessages(
             int nLastMessageInOrder,
@@ -14,15 +16,25 @@ public class UDPServer {
         //coisas
         if (nCurrentMessage == nLastMessageInOrder + 1) {
             System.out.println("Mensagem entregue: " + currentMessage);
+            mensagensEntregues.add(currentMessage);
             nLastMessageInOrder++;
+
+            // entrega em cascata
+            while (mapaRecebidos.containsKey(nLastMessageInOrder + 1)) {
+                int proximoNumero = nLastMessageInOrder + 1;
+                String proximaMensagem = mapaRecebidos.remove(proximoNumero);
+
+                System.out.println(">Hashmap entregue: " + proximaMensagem);
+                mensagensEntregues.add(proximaMensagem);
+                nLastMessageInOrder++;
+            }
         }
         else if (nCurrentMessage > nLastMessageInOrder + 1) {
-            System.out.println("Fora de ordem: " + currentMessage);
-            System.out.println("  > Aguardando mensagem de número: " + (nLastMessageInOrder + 1));
+            System.out.println(">Fora de ordem: " + currentMessage);
             mapaRecebidos.putIfAbsent(nCurrentMessage, currentMessage);
         }
         else {
-            System.out.println("Mensagem já recebida!");
+            System.out.println(">Mensagem já recebida: " + currentMessage);
         }
         return nLastMessageInOrder;
     }
@@ -81,19 +93,9 @@ public class UDPServer {
 
 
 
-                int novoL = processDeliveredMessages(L, numero, mensagem);
-                if (novoL != L) {
-                    L = novoL;
-                    while (mapaRecebidos.containsKey(L + 1)) {
-                        int proximoNumero = L + 1;
-                        String proximaMensagem = mapaRecebidos.remove(proximoNumero);
-                        L = processDeliveredMessages(L, proximoNumero, proximaMensagem);
-                    }
-                    resposta = "delivered," + L;
-                }
-                else {
-                    resposta = "waitingfor," + (L + 1);
-                }
+                L = processDeliveredMessages(L, numero, mensagem);
+
+                resposta = "waitingfor," + (L + 1);
 
                 byte[] dadosResposta = resposta.getBytes();
                 reply = new DatagramPacket(
