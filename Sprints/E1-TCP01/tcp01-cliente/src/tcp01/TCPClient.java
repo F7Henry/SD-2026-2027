@@ -15,14 +15,14 @@ public class TCPClient {
         try {
             s = new Socket(hostname, serverPort);
 
-            // 1. Criar ObjectOutputStream e enviar o cabeçalho imediatamente (evita deadlock)
+            // 1. Criar ObjectOutputStream e enviar o cabeçalho imediatamente
             ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
             out.flush();
 
             // 2. Criar DataInputStream para receber a resposta textual
             DataInputStream in = new DataInputStream(s.getInputStream());
 
-            // 3. Instanciar Person com Place; só a Person é escrita (o Place segue no grafo)
+            // 3. Juntar Person com Place
             Place place = new Place("3500-606", "Viseu");
             Person p = new Person("Ana Maria", place, 2001);
             System.out.println("A enviar objeto: " + p);

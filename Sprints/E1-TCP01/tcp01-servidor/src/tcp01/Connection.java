@@ -11,13 +11,12 @@ public class Connection extends Thread {
 
     public Connection(Socket aClientSocket) {
         clientSocket = aClientSocket;
-        this.start();   // o construtor só guarda o socket e lança a thread
+        this.start();
     }
 
     @Override
     public void run() {
         try {
-            // Criadas já dentro da thread própria: o bloqueio no cabeçalho fica aqui
             ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
             DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 
