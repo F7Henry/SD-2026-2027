@@ -7,8 +7,9 @@ public final class Wire {
 
     private Wire() { }
 
-    public static String topicIn(int k) { return "rep02-in-p" + k; }
-    public static String topicData(int k) { return "rep02-p" + k; }
+    private static final String TOPIC_NAMESPACE = "rep02-v2-";
+    public static String topicIn(int k) { return TOPIC_NAMESPACE + "in-p" + k; }
+    public static String topicData(int k) { return TOPIC_NAMESPACE + "p" + k; }
     public static String in(String sensor, double temp) {
         return "IN;" + sensor + ";" + temp;
     }
