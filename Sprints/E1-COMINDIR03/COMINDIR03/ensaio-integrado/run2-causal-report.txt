@@ -1,0 +1,8 @@
+﻿registos=10
+V[k]!=seq=0
+a->b=0
+b->a=0
+concorrentes=32
+concorrentes com L distinto=24 (0.7500)
+viola��es Lamport=0
+viola��es Lamport na parti��o=0

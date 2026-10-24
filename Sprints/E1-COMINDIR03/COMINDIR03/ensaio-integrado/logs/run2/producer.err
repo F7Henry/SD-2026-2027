@@ -1,0 +1,6 @@
+﻿Exception in thread "main" java.io.IOException: Erro ao publicar: 500 - {"Message":"validation ignored","Code":0,"Type":"error"}
+
+	at rep03.IpfsPubSub.publish(IpfsPubSub.java:64)
+	at rep03.Producer.burst(Producer.java:73)
+	at rep03.Producer.main(Producer.java:29)
+
