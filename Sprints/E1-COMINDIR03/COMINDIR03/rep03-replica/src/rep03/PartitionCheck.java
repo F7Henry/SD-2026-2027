@@ -23,9 +23,9 @@ public class PartitionCheck {
             for (String line : lines) {
                 SensorRecord record = SensorRecord.fromLine(line);
                 if (record.seq != expected++) System.out.println(
-                        "SEQUÃŠNCIA INVÃLIDA p" + p + ": " + record.seq);
+                        "SEQUENCIA INVALIDA p" + p + ": " + record.seq);
                 if (partitioner.of(record.sensorId) != p) System.out.println(
-                        "PARTIÃ‡ÃƒO INVÃLIDA: " + record.sensorId);
+                        "PARTICAO INVALIDA: " + record.sensorId);
             }
             total += lines.size();
             System.out.println("p" + p + ": " + lines.size() + " registos");
@@ -33,4 +33,3 @@ public class PartitionCheck {
         System.out.println("Total de registos: " + total);
     }
 }
-

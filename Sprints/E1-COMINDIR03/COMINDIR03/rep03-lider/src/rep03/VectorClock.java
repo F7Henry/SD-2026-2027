@@ -8,14 +8,14 @@ public final class VectorClock {
     private final long[] v;
 
     public VectorClock(int n) {
-        if (n <= 0) throw new IllegalArgumentException("dimensão inválida");
+        if (n <= 0) throw new IllegalArgumentException("dimensao invalida");
         v = new long[n];
     }
 
     private VectorClock(long[] v) { this.v = v; }
 
     public void merge(VectorClock other) {
-        if (v.length != other.v.length) throw new IllegalArgumentException("dimensões diferentes");
+        if (v.length != other.v.length) throw new IllegalArgumentException("dimensoes diferentes");
         for (int i = 0; i < v.length; i++) v[i] = Math.max(v[i], other.v[i]);
     }
 
@@ -28,7 +28,7 @@ public final class VectorClock {
     public VectorClock copy() { return new VectorClock(v.clone()); }
 
     public Order compare(VectorClock other) {
-        if (v.length != other.v.length) throw new IllegalArgumentException("dimensões diferentes");
+        if (v.length != other.v.length) throw new IllegalArgumentException("dimensoes diferentes");
         boolean less = false, greater = false;
         for (int i = 0; i < v.length; i++) {
             less |= v[i] < other.v[i];
@@ -51,7 +51,7 @@ public final class VectorClock {
 
     public static VectorClock parse(String value, int n) {
         String[] fields = value.trim().split(",");
-        if (fields.length != n) throw new IllegalArgumentException("dimensão do vetor inválida");
+        if (fields.length != n) throw new IllegalArgumentException("dimensao do vetor invalida");
         long[] values = new long[n];
         for (int i = 0; i < n; i++) values[i] = Long.parseLong(fields[i].trim());
         return new VectorClock(values);

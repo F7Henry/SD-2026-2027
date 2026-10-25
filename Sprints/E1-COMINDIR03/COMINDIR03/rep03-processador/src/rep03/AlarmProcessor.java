@@ -34,8 +34,8 @@ public final class AlarmProcessor {
                 pubsub.subscribe(Wire.topicData(partition),
                         message -> state.receive(partition, message));
             } catch (Exception e) {
-                System.out.println("Subscrição p" + partition
-                        + " interrompida: " + e.getMessage());
+                System.out.println("SUBSCRICAO p" + partition
+                        + " INTERROMPIDA: " + e.getMessage());
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interrupted) {
@@ -55,7 +55,7 @@ public final class AlarmProcessor {
         private final List<Set<Long>> seen;
 
         ProcessorState(int n, IpfsPubSub pubsub) {
-            if (n <= 0) throw new IllegalArgumentException("N inválido");
+            if (n <= 0) throw new IllegalArgumentException("N invalido");
             this.n = n;
             this.pubsub = pubsub;
             this.vector = new VectorClock(n);
@@ -78,7 +78,7 @@ public final class AlarmProcessor {
                     pubsub.publish(Wire.topicIn(target), Wire.in(alarmSensor,
                             record.temperature, lamport, vector.copy()));
                     System.out.println("ALARME: " + record.sensorId + " p"
-                            + partition + "#" + record.seq + " → p" + target);
+                            + partition + "#" + record.seq + " -> p" + target);
                 }
             } catch (Exception e) {
                 System.out.println("REG rejeitado: " + e.getMessage());

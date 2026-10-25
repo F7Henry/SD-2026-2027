@@ -39,7 +39,7 @@ public class PartitionReplica {
                 long discard = Long.parseLong(System.getProperty("descartar", "-1"));
                 if (Math.random() < loss || (record.seq == discard && !discarded)) {
                     if (record.seq == discard) discarded = true;
-                    System.out.println("DESCARTADO (simulaÃ§Ã£o): " + record.seq);
+                    System.out.println("DESCARTADO (SIMULACAO): " + record.seq);
                     return;
                 }
                 apply(record);
@@ -79,7 +79,7 @@ public class PartitionReplica {
             long from = last + 1;
             long to = pending.firstKey() - 1;
             if (from > to) return;
-            System.out.println("RECUPERAÃ‡ÃƒO: " + from + ".." + to
+            System.out.println("RECUPERACAO: " + from + ".." + to
                     + " pedida a " + host + ":" + port);
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(host, port), Wire.T_TCP_MS);
@@ -108,7 +108,7 @@ public class PartitionReplica {
                     last = next.seq;
                 }
             } catch (Exception e) {
-                System.out.println("RECUPERAÃ‡ÃƒO FALHOU: " + e.getMessage());
+                System.out.println("RECUPERACAO FALHOU: " + e.getMessage());
             }
         }
     }
@@ -139,8 +139,8 @@ public class PartitionReplica {
                 new IpfsPubSub(api).subscribe(Wire.topicData(state.partition),
                         state::receive);
             } catch (Exception e) {
-                System.out.println("SubscriÃ§Ã£o p" + state.partition
-                        + " interrompida: " + e.getMessage());
+                System.out.println("SUBSCRICAO p" + state.partition
+                        + " INTERROMPIDA: " + e.getMessage());
                 try { Thread.sleep(1000); }
                 catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
@@ -150,4 +150,3 @@ public class PartitionReplica {
         }
     }
 }
-

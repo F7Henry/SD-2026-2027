@@ -37,7 +37,7 @@ public final class CausalCheck {
         for (Event event : events) {
             if (event.record.vector.get(event.partition) != event.record.seq) {
                 invalid++;
-                System.out.println("INVÁLIDO: p" + event.partition
+                System.out.println("INVALIDO: p" + event.partition
                         + " seq=" + event.record.seq + " V="
                         + event.record.vector);
             }
@@ -48,7 +48,7 @@ public final class CausalCheck {
             Event prior = previous.put(event.partition, event);
             if (prior != null && event.record.lamport <= prior.record.lamport) {
                 localLamportViolations++;
-                System.out.println("LAMPORT INVÁLIDO: p" + event.partition
+                System.out.println("LAMPORT INVALIDO: p" + event.partition
                         + " L=" + prior.record.lamport + " seguido de L="
                         + event.record.lamport);
             }
@@ -86,8 +86,8 @@ public final class CausalCheck {
         String report = String.format(Locale.ROOT,
                 "registos=%d%nV[k]!=seq=%d%na->b=%d%nb->a=%d%n"
                         + "concorrentes=%d%nconcorrentes com L distinto=%d "
-                        + "(%.4f)%nviolações Lamport=%d%n"
-                        + "violações Lamport na partição=%d%n",
+                        + "(%.4f)%nviolacoes Lamport=%d%n"
+                        + "violacoes Lamport na particao=%d%n",
                 events.size(), invalid, before, after, concurrent,
                 concurrentLamportDifferent, proportion, lamportViolations,
                 localLamportViolations);

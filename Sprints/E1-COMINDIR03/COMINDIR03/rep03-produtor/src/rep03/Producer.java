@@ -75,9 +75,9 @@ public class Producer {
             byPartition[p]++;
         }
         long end = System.currentTimeMillis();
-        System.out.println("Primeira publicaÃ§Ã£o: " + start);
-        System.out.println("Ãšltima publicaÃ§Ã£o: " + end);
-        System.out.println("Tempo de envio: " + (end - start) + " ms");
+        System.out.println("PRIMEIRA PUBLICACAO: " + start);
+        System.out.println("ULTIMA PUBLICACAO: " + end);
+        System.out.println("TEMPO DE ENVIO: " + (end - start) + " ms");
         for (int p = 0; p < byPartition.length; p++) {
             System.out.println("p" + p + ": " + byPartition[p]);
         }

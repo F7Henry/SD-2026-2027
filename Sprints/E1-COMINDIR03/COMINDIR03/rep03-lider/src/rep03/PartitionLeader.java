@@ -16,7 +16,7 @@ public class PartitionLeader {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
-            System.out.println("Uso: PartitionLeader <k> <N> [endereÃ§o] [api]");
+            System.out.println("Uso: PartitionLeader <k> <N> [endereco] [api]");
             return;
         }
         int k = Integer.parseInt(args[0]);
@@ -42,7 +42,7 @@ public class PartitionLeader {
                         if (fields.length != 4) throw new IllegalArgumentException();
                         String sensor = fields[0];
                         if (partitioner.of(sensor) != k) {
-                            System.out.println("PARTIÃ‡ÃƒO ERRADA: " + sensor);
+                            System.out.println("PARTICAO ERRADA: " + sensor);
                             return;
                         }
                         double temperature = Double.parseDouble(fields[1]);
@@ -73,13 +73,13 @@ public class PartitionLeader {
                     }
                 });
             } catch (Exception e) {
-                System.out.println("SubscriÃ§Ã£o interrompida: " + e.getMessage());
+                System.out.println("SUBSCRICAO INTERROMPIDA: " + e.getMessage());
             }
         }, "entrada-p" + k);
         input.start();
 
         try (ServerSocket server = new ServerSocket(port)) {
-            System.out.println("LÃ­der p" + k + " Ã  escuta em " + port);
+            System.out.println("LIDER p" + k + " A ESCUTA EM " + port);
             while (true) {
                 try (Socket socket = server.accept();
                      BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -100,13 +100,13 @@ public class PartitionLeader {
                             out.println(record.toLine());
                         }
                         out.println("FIM");
-                        System.out.println("RECUPERAÃ‡ÃƒO: " + from + ".." + to
+                        System.out.println("RECUPERACAO: " + from + ".." + to
                                 + " (" + records.size() + " registos)");
                     } catch (IllegalArgumentException e) {
                         out.println("ERRO " + e.getMessage());
                     }
                 } catch (Exception e) {
-                    System.out.println("RecuperaÃ§Ã£o interrompida: " + e.getMessage());
+                    System.out.println("RECUPERACAO INTERROMPIDA: " + e.getMessage());
                 }
             }
         }
@@ -116,11 +116,11 @@ public class PartitionLeader {
         if (request == null) throw new IllegalArgumentException("pedido vazio");
         String[] fields = request.trim().split("\\s+");
         if (fields.length != 3 || !"PEDIDO".equals(fields[0])) {
-            throw new IllegalArgumentException("pedido invÃ¡lido");
+            throw new IllegalArgumentException("pedido invalido");
         }
         long from = Long.parseLong(fields[1]);
         long to = Long.parseLong(fields[2]);
-        if (from > to) throw new IllegalArgumentException("intervalo invÃ¡lido");
+        if (from > to) throw new IllegalArgumentException("intervalo invalido");
         return new long[] {from, to};
     }
 }

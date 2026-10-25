@@ -3,7 +3,7 @@ package rep03;
 public final class Partitioner {
     private final int n;
     public Partitioner(int n) {
-        if (n < 1) throw new IllegalArgumentException("NÃºmero invÃ¡lido");
+        if (n < 1) throw new IllegalArgumentException("Numero invalido");
         this.n = n;
     }
     public int of(String sensorId) {
@@ -11,4 +11,3 @@ public final class Partitioner {
     }
     public int count() { return n; }
 }
-

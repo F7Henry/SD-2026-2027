@@ -86,7 +86,7 @@ public class IpfsPubSub {
                 || response.statusCode() >= 300) {
             response.body().close();
             throw new IOException(
-                    "Erro na subscriÃƒÂ§ÃƒÂ£o: " + response.statusCode());
+                    "ERRO NA SUBSCRICAO: " + response.statusCode());
         }
 
         try (BufferedReader reader = new BufferedReader(
@@ -113,7 +113,7 @@ public class IpfsPubSub {
 
                 } catch (IllegalArgumentException e) {
                     System.out.println(
-                            "Mensagem PubSub com codificaÃƒÂ§ÃƒÂ£o invÃƒÂ¡lida.");
+                            "MENSAGEM PUBSUB COM CODIFICACAO INVALIDA.");
                 }
             }
         }
@@ -137,4 +137,3 @@ public class IpfsPubSub {
         return jsonLine.substring(start, end);
     }
 }
-
