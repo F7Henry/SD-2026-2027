@@ -1,8 +1,0 @@
-registos=14
-V[k]!=seq=0
-a->b=0
-b->a=6
-concorrentes=45
-concorrentes com L distinto=39 (0.8667)
-violações Lamport=0
-violações Lamport na partição=0

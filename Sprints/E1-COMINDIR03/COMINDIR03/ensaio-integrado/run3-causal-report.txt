@@ -1,8 +1,0 @@
-﻿registos=5
-V[k]!=seq=0
-a->b=0
-b->a=0
-concorrentes=8
-concorrentes com L distinto=4 (0.5000)
-viola��es Lamport=0
-viola��es Lamport na parti��o=0

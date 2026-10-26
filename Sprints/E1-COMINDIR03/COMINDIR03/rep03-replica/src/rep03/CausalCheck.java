@@ -86,8 +86,8 @@ public final class CausalCheck {
         String report = String.format(Locale.ROOT,
                 "registos=%d%nV[k]!=seq=%d%na->b=%d%nb->a=%d%n"
                         + "concorrentes=%d%nconcorrentes com L distinto=%d "
-                        + "(%.4f)%nviolacoes Lamport=%d%n"
-                        + "violacoes Lamport na particao=%d%n",
+                        + "(%.4f)%nviolações Lamport=%d%n"
+                        + "violações Lamport na partição=%d%n",
                 events.size(), invalid, before, after, concurrent,
                 concurrentLamportDifferent, proportion, lamportViolations,
                 localLamportViolations);
