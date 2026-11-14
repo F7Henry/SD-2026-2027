@@ -1,0 +1,8 @@
+.gradle/
+build/
+out/
+*.iml
+.idea/
+.env
+master.key
+discord-token.txt
