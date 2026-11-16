@@ -39,6 +39,23 @@ Remove-Item Env:\DISCORD_TOKEN
 Remove-Item Env:\DISCORD_GUILD_ID
 ```
 
+## Arranque no Windows CMD
+
+No CMD, define as variáveis de ambiente e inicia o bot com:
+
+```cmd
+set DISCORD_TOKEN=token-local-do-bot
+set DISCORD_GUILD_ID=id-do-servidor-de-teste
+gradlew.bat run
+```
+
+Para remover as variáveis na sessão atual:
+
+```cmd
+set DISCORD_TOKEN=
+set DISCORD_GUILD_ID=
+```
+
 Os comandos são registados como comandos do servidor e devem aparecer no
 autocomplete após o arranque. Não existe ainda cifra, registo em ficheiro,
 réplicas ou recuperação neste sprint.
