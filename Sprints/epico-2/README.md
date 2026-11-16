@@ -41,7 +41,13 @@ Remove-Item Env:\DISCORD_GUILD_ID
 
 ## Arranque no Windows CMD
 
-No CMD, define as variáveis de ambiente e inicia o bot com:
+No CMD, primeiro compila e testa o projeto com:
+
+```cmd
+gradlew.bat build
+```
+
+Depois define as variáveis de ambiente e inicia o bot com:
 
 ```cmd
 set DISCORD_TOKEN=token-local-do-bot
