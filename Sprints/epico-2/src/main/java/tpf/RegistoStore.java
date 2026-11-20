@@ -45,7 +45,7 @@ public final class RegistoStore {
             appendAndForce(registosPath, line);
             appendAndForce(eventosPath, registo.instante() + ";REGISTO;lsn="
                     + registo.lsn() + ",autor=" + registo.autor()
-                    + ",canal=" + registo.canal());
+                    + ",canal=" + registo.canal() + System.lineSeparator());
             return registo;
         } catch (IOException exception) {
             throw new IllegalStateException("Não foi possível persistir o registo", exception);
@@ -67,9 +67,20 @@ public final class RegistoStore {
                     result.add(decode(line));
                 }
             }
+
             return List.copyOf(result);
         } catch (IOException exception) {
             throw new IllegalStateException("Não foi possível ler " + registosPath, exception);
+        }
+    }
+
+    public synchronized void evento(String tipo, String detalhe) {
+        try {
+            appendAndForce(eventosPath, Instant.now() + ";" + tipo + ";" + detalhe
+                    + System.lineSeparator());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Não foi possível persistir o evento " + tipo,
+                    exception);
         }
     }
 

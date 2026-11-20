@@ -13,7 +13,13 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public final class LeaderBot extends ListenerAdapter {
     // Nomes usados para identificar o canal de arquivo e o papel de administração.
@@ -24,9 +30,20 @@ public final class LeaderBot extends ListenerAdapter {
     // instância para que os handlers de eventos possam confirmar a origem de
     // cada evento e ignorar os que vêm de outros servidores.
     private final String guildId;
+    private final RegistoStore registoStore;
+    private final byte[] masterKey;
+    private final Path sealedDirectory;
+    private final ScheduledExecutorService scheduler;
+    private Chunk chunk = new Chunk();
 
     public LeaderBot(String guildId) {
         this.guildId = guildId;
+        this.registoStore = new RegistoStore();
+        this.masterKey = Wire.loadOrCreateMasterKey();
+        this.sealedDirectory = Path.of("selados");
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(this::sealIfExpired, Wire.SELAGEM_MS,
+                Wire.SELAGEM_MS, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -102,19 +119,23 @@ public final class LeaderBot extends ListenerAdapter {
 
         // Responde provisoriamente a cada comando e ecoa os argumentos recebidos.
         switch (name) {
-            case "registar" -> event.reply("`/registar` recebido: texto="
-                    + quote(event.getOption("texto").getAsString())
-                    + " — ainda não implementado").queue();
+            case "registar" -> {
+                try {
+                    Registo registo = registar(event.getUser().getName(), "comando",
+                            event.getOption("texto").getAsString());
+                    event.reply("Registo persistido com LSN " + registo.lsn()).queue();
+                } catch (RuntimeException exception) {
+                    event.reply("Não foi possível persistir o registo: "
+                            + exception.getMessage()).setEphemeral(true).queue();
+                }
+            }
             case "estado" -> event.reply("`/estado` recebido — ainda não implementado.").queue();
             case "config" -> handleConfig(event);
             case "recuperar" -> handleRecovery(event);
             case "replica-token" -> event.reply("`/replica-token` recebido — ainda não implementado.").queue();
             case "replica-remover" -> event.reply("`/replica-remover` recebido: id="
                     + event.getOption("id").getAsString() + " — ainda não implementado").queue();
-            case "rajada" -> event.reply("`/rajada` recebido: n="
-                    + event.getOption("n").getAsLong() + ", intervaloMs="
-                    + event.getOption("intervaloms").getAsLong()
-                    + " — ainda não implementado").queue();
+            case "rajada" -> handleBurst(event);
             default -> event.reply("Comando desconhecido.").setEphemeral(true).queue();
         }
     }
@@ -137,8 +158,63 @@ public final class LeaderBot extends ListenerAdapter {
         // ao fluxo; os outros canais são ignorados.
         if (event.getChannel() instanceof TextChannel channel
                 && ARCHIVE_CHANNEL.equals(channel.getName())) {
-            channel.sendMessage("Mensagem em `#arquivo` detetada — ainda não implementado.").queue();
+            try {
+                Registo registo = registar(event.getAuthor().getName(), channel.getName(),
+                        event.getMessage().getContentRaw());
+                channel.sendMessage("Registo persistido com LSN " + registo.lsn()).queue();
+            } catch (RuntimeException exception) {
+                channel.sendMessage("Não foi possível persistir o registo.").queue();
+            }
         }
+    }
+
+    private synchronized Registo registar(String autor, String canal, String texto) {
+        Registo registo = registoStore.registar(autor, canal, texto);
+        boolean excedeuLimite = chunk.adicionar(registo);
+        if (excedeuLimite) {
+            selarChunk();
+        }
+        return registo;
+    }
+
+    private synchronized void sealIfExpired() {
+        if (!chunk.vazio() && chunk.deveSelarPorTempo(Instant.now())) {
+            selarChunk();
+        }
+    }
+
+    private void selarChunk() {
+        Chunk current = chunk;
+        byte[] padded = current.serializar();
+        ChunkCrypto.SealedData sealed = Sealed.write(sealedDirectory, masterKey, padded);
+        List<Registo> records = current.registos();
+        registoStore.evento("SELADO", "chunkId=" + sealed.chunkId()
+                + ",lsnDe=" + records.get(0).lsn()
+                + ",lsnAte=" + records.get(records.size() - 1).lsn()
+                + ",tamanho=" + sealed.ciphertext().length);
+        chunk = new Chunk();
+    }
+
+    private void handleBurst(SlashCommandInteractionEvent event) {
+        long count = event.getOption("n").getAsLong();
+        long interval = event.getOption("intervaloms").getAsLong();
+        event.deferReply().queue(hook -> scheduler.execute(() -> {
+            try {
+                for (long i = 0; i < count; i++) {
+                    registar("rajada", "comando",
+                            "registo-sintetico-" + (i + 1));
+                    if (interval > 0 && i + 1 < count) {
+                        Thread.sleep(interval);
+                    }
+                }
+                hook.editOriginal("Rajada concluída: " + count + " registos.").queue();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                hook.editOriginal("Rajada interrompida.").queue();
+            } catch (RuntimeException exception) {
+                hook.editOriginal("Rajada falhou: " + exception.getMessage()).queue();
+            }
+        }));
     }
 
     private static void handleConfig(SlashCommandInteractionEvent event) {
