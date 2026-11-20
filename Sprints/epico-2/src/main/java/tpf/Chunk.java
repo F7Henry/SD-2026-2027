@@ -18,7 +18,7 @@ import java.util.Objects;
  * Chunk aberto que acumula registos antes da selagem e cifra.
  *
  * <p>Formato binário: magic {@code TPF1}, número de registos e, para cada
- * registo, LSN, instante em milissegundos UTC e os campos de texto como
+ * registo, LSN, instante como segundos UTC e nanossegundos e os campos de texto como
  * strings UTF-8 precedidas pelo seu tamanho. O resultado é completado com
  * zeros até um múltiplo de {@link Wire#PAD_BYTES}.</p>
  */
@@ -98,7 +98,7 @@ public final class Chunk {
             List<Registo> result = new ArrayList<>(count);
             for (int i = 0; i < count; i++) {
                 long lsn = input.readLong();
-                Instant instante = Instant.ofEpochMilli(input.readLong());
+                Instant instante = Instant.ofEpochSecond(input.readLong(), input.readInt());
                 String autor = readString(input);
                 String canal = readString(input);
                 String texto = readString(input);
@@ -121,7 +121,8 @@ public final class Chunk {
 
             for (Registo registo : registos) {
                 output.writeLong(registo.lsn());
-                output.writeLong(registo.instante().toEpochMilli());
+                output.writeLong(registo.instante().getEpochSecond());
+                output.writeInt(registo.instante().getNano());
                 writeString(output, registo.autor());
                 writeString(output, registo.canal());
                 writeString(output, registo.texto());

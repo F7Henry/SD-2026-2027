@@ -62,6 +62,28 @@ set DISCORD_TOKEN=
 set DISCORD_GUILD_ID=
 ```
 
-Os comandos são registados como comandos do servidor e devem aparecer no
-autocomplete após o arranque. Não existe ainda cifra, registo em ficheiro,
-réplicas ou recuperação neste sprint.
+## Testes
+
+Executa os testes automatizados a partir desta pasta:
+
+```powershell
+.\gradlew.bat test
+```
+
+Os testes verificam a cifra e a deteção de alterações, a serialização e o
+padding dos chunks, a persistência e recuperação dos LSNs, a codificação
+Base64 e a gravação/abertura dos ficheiros selados.
+
+## Utilização no Discord
+
+Os comandos são registados no servidor configurado e aparecem no autocomplete
+após o arranque:
+
+- `/registar texto:<mensagem>` persiste uma mensagem e responde com o LSN.
+- Mensagens escritas em `#arquivo` são persistidas automaticamente.
+- `/rajada n:<quantidade> intervaloms:<milissegundos>` injeta registos sintéticos
+  e requer o papel `admin-arquivo`.
+
+Os dados locais são guardados em `registos.log`, `eventos-lider.txt`,
+`master.key` e na pasta `selados`. Réplicas e recuperação distribuída ainda
+não fazem parte deste sprint.
