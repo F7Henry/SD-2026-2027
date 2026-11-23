@@ -1,0 +1,9 @@
+registos (união, sem duplicados)=4
+registos (finais)=4
+V[k]!=seq=0
+a->b=0
+b->a=0
+concorrentes=0
+concorrentes com L distinto=0 (0.0000)
+violações Lamport=0
+violações Lamport na partição=0
