@@ -62,7 +62,7 @@ set DISCORD_TOKEN=
 set DISCORD_GUILD_ID=
 ```
 
-## Testes
+## Testes (sprint 2)
 
 Executa os testes automatizados a partir desta pasta:
 
@@ -73,6 +73,54 @@ Executa os testes automatizados a partir desta pasta:
 Os testes verificam a cifra e a deteção de alterações, a serialização e o
 padding dos chunks, a persistência e recuperação dos LSNs, a codificação
 Base64 e a gravação/abertura dos ficheiros selados.
+
+## Formato binário dos chunks
+
+O conteúdo de um chunk antes da cifra é um bloco binário com magic `TPF1`.
+Todos os números inteiros são escritos em **big-endian**.
+
+| Campo | Tipo/tamanho |
+|---|---|
+| Magic | 4 bytes: `TPF1` |
+| Número de registos | inteiro de 32 bits |
+| LSN | inteiro de 64 bits |
+| Instante: segundos UTC | inteiro de 64 bits |
+| Instante: nanossegundos | inteiro de 32 bits |
+| Autor: tamanho UTF-8 | inteiro de 32 bits |
+| Autor: conteúdo | tamanho indicado, codificado em UTF-8 |
+| Canal: tamanho UTF-8 | inteiro de 32 bits |
+| Canal: conteúdo | tamanho indicado, codificado em UTF-8 |
+| Texto: tamanho UTF-8 | inteiro de 32 bits |
+| Texto: conteúdo | tamanho indicado, codificado em UTF-8 |
+
+Os quatro campos seguintes aos tamanhos (`LSN`, instante, autor, canal e texto)
+repetem-se uma vez por registo. Os campos de texto são escritos como sequência
+de tamanho e bytes UTF-8, e não como texto em claro numa linha.
+
+Depois da sequência de registos, o bloco é completado com bytes `0x00` até
+atingir um tamanho múltiplo de `PAD_BYTES`. O valor predefinido é 4096 bytes
+e pode ser alterado com `-Dtpf.padBytes`.
+
+## Formato dos ficheiros selados
+
+Cada chunk cifrado é gravado em:
+
+- `selados/<chunkId>.bin`: ciphertext, incluindo a tag GCM de 128 bits.
+- `selados/<chunkId>.hdr`: metadados em texto:
+
+```text
+<keyVersion>;<saltBase64>;<nonceBase64>
+```
+
+Por exemplo:
+
+```text
+1;c2FsdGUuLi4=;bm9uY2UuLi4=
+```
+
+O `salt` ocupa 32 bytes, o `nonce` ocupa 12 bytes e ambos são codificados com
+Base64 no `.hdr`. O `chunkId` é o SHA-256 hexadecimal do conteúdo completo do
+ficheiro `.bin`, incluindo a tag GCM.
 
 ## Utilização no Discord
 
